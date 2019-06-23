@@ -46,7 +46,7 @@ time - int/float - Game time in seconds or any units. }
 **`:param id_att:`** (int/string) - Provide id of attacking team
 **`:param x_range:`** (list/tuple of min max of pitch dimension) - Provide x range of the pitch dimension
 **`:param y_range:`** (list/tuple of min max of pitch dimension) - Provide y range of the pitch dimension
-**`:param image_url:`** (list) - Provide the location of the background image for the pitch
+**`:param image_url:`** (string/list of string) - Provide the location of the background image for the pitch
 
 **`:param slider_steps:`** (int/float) - Provide the slider steps - This is the difference in time between each frame of game action.
 

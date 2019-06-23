@@ -81,10 +81,10 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
         raise ValueError("The expected data type for defending team-id is either integer, float "
                          "or a string but {} was provided.".format(type(id_att)))
 
-    if not isinstance(x_range, (list,tuple)):
+    if not isinstance(x_range, (list, tuple)):
         raise ValueError("The expected data type for x-range is a list but a {} was provided.".format(type(x_range)))
 
-    if not isinstance(y_range, (list,tuple)):
+    if not isinstance(y_range, (list, tuple)):
         raise ValueError("The expected data type for y-range is a list but a {} was provided.".format(type(y_range)))
 
     if len(x_range) != 2:
@@ -92,6 +92,12 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
 
     if len(y_range) != 2:
         raise ValueError("Length of y range of coordinates is {} but expected length is 2.".format(len(x_range)))
+
+    if sport not in ['football', 'basketball']:
+        raise ValueError("Only football/basketball in accepted as input for sport type, but {} was provided.".format(sport))
+
+    if not isinstance(image_url, list):
+        image_url = [image_url]
 
     all_team = pd.DataFrame(df, columns=headers)
 
@@ -130,6 +136,10 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     vor = Voronoi(vor_points)
     x_patch, y_patch, x_vor_ls, y_vor_ls = patches_from_voronoi(vor)
 
+    """
+       Create the convex hull for the coordinates
+
+    """
     def get_convex_hull(team_def, team_att, current_time):
 
         team_att_t = np.vstack((team_att[team_att.time == current_time].x, team_att[team_att.time == current_time].y)).T
@@ -190,6 +200,10 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     source_def_params = ColumnDataSource(data=dict(x=team_def.player_id.unique(), y=def_dist, speed=avg_speed_def))
     source_att_params = ColumnDataSource(data=dict(x=team_att.player_id.unique(), y=def_dist_att, speed=avg_speed_att))
 
+    """
+    Remove plot background and alter other styles
+    
+    """
     def plot_clean(plot):
 
         plot.xgrid.grid_line_color = None
@@ -203,8 +217,8 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
         plot.title.align = 'center'
         return plot
 
-    plot = figure(name='base',plot_height=550, plot_width=850, title="Game Animation",
-                  tools="reset,save",
+    plot = figure(name='base',plot_height=550, plot_width=850,
+                  title="Game Animation", tools="reset,save",
                   x_range=x_range, y_range=y_range, toolbar_location="below")
 
     image_min_x, image_min_y, image_max_x, image_max_y = min(x_range), min(y_range), \
@@ -219,14 +233,17 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
                       source=source_coord, y_offset=-30,
                       render_mode='canvas', text_color='black',
                       text_font_size="9pt", text_align='center')
-    plot.add_layout(labels)
 
+    plot.add_layout(labels)
     plot.axis.visible = False
     plot = plot_clean(plot)
 
+    """
+    Plot the distance figure
+    """
     plot_distance_def = figure(name='distance',plot_height=250, plot_width=200,
-
-                               tools="reset,save", x_axis_type='linear', y_range=source_def_params.data['x'].astype(str),  # x_range=[0, 350], y_range=[0,12],
+                               tools="reset,save", x_axis_type='linear',
+                               y_range=source_def_params.data['x'].astype(str),
                                toolbar_location="below")
 
     plot_distance_def.hbar(y='x', right='y', source=source_def_params, left=0, height=0.5,color='dodgerblue')
@@ -241,20 +258,19 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     plot_distance_def = plot_clean(plot_distance_def)
 
     labels_dist_red = LabelSet(x='y', y='x', text='y', level='glyph',
-                             x_offset=-20, y_offset=-9, source=source_def_params,
-                             render_mode='css', text_color='white',
-                             text_font_size="8pt", text_font_style='bold')
+                               x_offset=-20, y_offset=-9, source=source_def_params,
+                               render_mode='css', text_color='white',
+                               text_font_size="8pt", text_font_style='bold')
 
     plot_distance_def.add_layout(labels_dist_red)
 
     avg_speed_def = figure(name='distance', plot_height=250, plot_width=200,
                            title="Avg Speed of Blue Team", tools="reset,save",
                            y_range=source_def_params.data['x'].astype(str),
-
-                            toolbar_location="below") #y_range=[0, 12], x_range=[0, 15],
+                           toolbar_location="below")
 
     avg_speed_def.hbar(y='x', right='speed', source=source_def_params,
-                                        height=0.5, color='dodgerblue')
+                       height=0.5, color='dodgerblue')
 
     avg_speed_def.xaxis.visible = True
     avg_speed_def.yaxis.visible = True
@@ -269,7 +285,9 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
                               text_font_size="8pt", text_font_style='bold')
 
     avg_speed_def.add_layout(labels_speed_red)
-
+    """
+       Plot the distance figure
+    """
     plot_distance_att = figure(name='distance',plot_height=250, plot_width=200,
                                y_range=source_att_params.data['x'].astype(str),
                                toolbar_location="below")
@@ -319,6 +337,9 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     game_time = Slider(title="Game Time (seconds)", value=slider_start,
                        start=slider_start, end=slider_end, step=slider_steps)
 
+    """
+       Update the figure every time slider is updated.
+    """
     def update_data(attrname, old, new):
 
         slider_value = np.round(game_time.value, 2)
@@ -347,6 +368,9 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     for w in [game_time]:
         w.on_change('value', update_data)
 
+    """
+       Animation
+    """
     def animate_update():
 
         time = game_time.value + slider_steps
@@ -368,6 +392,9 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     button = Button(label='► Play', width=60)
     button.on_click(animate)
 
+    """
+       Plot the patches for voronoi and convex hull
+    """
     team_att_patch = plot.patch('xc', 'yc', source=source_ch_att, alpha=0, line_width=3, fill_color='orangered')
     team_def_patch = plot.patch('ax', 'ay', source=source_ch_def, alpha=0, line_width=3, fill_color='dodgerblue')
 
@@ -403,13 +430,14 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     inputs = widgetbox(row(column(game_time, button),
                            row(column(text_p, row(checkbox_def, checkbox_att)), checkbox_vor)))
 
+    """
+       Plot the speed and distance if true
+    """
     if not show_dist_speed:
-
         layout = column(row(column(plot, inputs)))
     else:
         layout = column(row(column(plot, inputs),row(column(plot_distance_def, avg_speed_def),column(plot_distance_att, avg_speed_att))))
 
-    #row(column(plot_distance_def, avg_speed_def),column(plot_distance_att, avg_speed_att))
     doc.add_root(layout)
     doc.title = "Game Animation"
 
