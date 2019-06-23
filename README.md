@@ -25,7 +25,7 @@ The animation plot can be viewed directly on a `Jupyter Notebook`.
 - The background pitch images are placed in `/static/images/` folder.  
 
 
-***Please see `Notes.txt` for additional information.***
+***Please see `Notes` for additional information.***
  
 
 ### Key Parameters to `make_plot`
@@ -119,9 +119,9 @@ show(make_doc_with_df)
 
 ### Sample Outputs:
 ---
-![basketball_image]('sample_images/basketball.png')
+<img src="https://raw.githubusercontent.com/samirak93/Game-Animation/master/sample_images/basketball.png" alt="Basketball_example" width="700"/>
 
-![soccer_image]('sample_images/soccer.png')
+<img src="https://raw.githubusercontent.com/samirak93/Game-Animation/master/sample_images/soccer.png" alt="Soccer_example" width="700"/>
 
 ---
 
