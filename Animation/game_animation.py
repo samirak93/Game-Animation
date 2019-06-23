@@ -171,7 +171,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
 
     """
     Below code for travel distance and speed taken from 
-    http://savvastjortjoglou.com/nba-play-by-play-movements.html
+    http://savvastjortjoglou.com/nba-play-by-play-movements.html and modified accordingly
     
     """
 
@@ -185,20 +185,29 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
 
     def get_distance(team_def, team_att, i):
 
-        team_def_k = team_def[(team_def.time >= 0) & (team_def.time <= i)]
-        def_dist = team_def_k.groupby('player_id')[['x','y']].apply(travel_dist).values
-        avg_speed_def = np.round((def_dist / ((i*0.1)-0)), 1)
+        if sport == 'football':
+            team_def_k = team_def[(team_def.time >= 0) & (team_def.time <= i)]
+        elif sport =='basketball':
+            team_def_k = team_def[(team_def.time >= team_def.time.min()) & (team_def.time <= i)]
 
-        team_att_k = team_att[(team_att.time >= 0) & (team_att.time <= i)]
+        def_dist = team_def_k.groupby('player_id')[['x','y']].apply(travel_dist).values
+        avg_speed_def = np.abs(np.round((def_dist / (i - team_def.time.min())), 2))
+
+        if sport == 'football':
+            team_att_k = team_att[(team_att.time >= 0) & (team_att.time <= i)]
+        elif sport == 'basketball':
+            team_att_k = team_att[(team_att.time >= team_def.time.min()) & (team_att.time <= i)]
+
         def_dist_att = team_att_k.groupby('player_id')[['x','y']].apply(travel_dist).values
-        avg_speed_att = np.round((def_dist_att / ((i*0.1)-0)), 1)
+        avg_speed_att = np.abs(np.round((def_dist_att / (i - team_att.time.min())), 2))
 
         return def_dist, avg_speed_def, def_dist_att, avg_speed_att
 
-    def_dist, avg_speed_def, def_dist_att, avg_speed_att = get_distance(team_def,team_att, current_time)
+    def_dist, avg_speed_def, def_dist_att, avg_speed_att = get_distance(team_def, team_att, current_time)
 
     source_def_params = ColumnDataSource(data=dict(x=team_def.player_id.unique(), y=def_dist, speed=avg_speed_def))
     source_att_params = ColumnDataSource(data=dict(x=team_att.player_id.unique(), y=def_dist_att, speed=avg_speed_att))
+
 
     """
     Remove plot background and alter other styles
@@ -241,7 +250,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     """
     Plot the distance figure
     """
-    plot_distance_def = figure(name='distance',plot_height=250, plot_width=200,
+    plot_distance_def = figure(name='distance',plot_height=250, plot_width=250,
                                tools="reset,save", x_axis_type='linear',
                                y_range=source_def_params.data['x'].astype(str),
                                toolbar_location="below")
@@ -264,7 +273,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
 
     plot_distance_def.add_layout(labels_dist_red)
 
-    avg_speed_def = figure(name='distance', plot_height=250, plot_width=200,
+    avg_speed_def = figure(name='distance', plot_height=250, plot_width=250,
                            title="Avg Speed of Blue Team", tools="reset,save",
                            y_range=source_def_params.data['x'].astype(str),
                            toolbar_location="below")
@@ -288,7 +297,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     """
        Plot the distance figure
     """
-    plot_distance_att = figure(name='distance',plot_height=250, plot_width=200,
+    plot_distance_att = figure(name='distance',plot_height=250, plot_width=250,
                                y_range=source_att_params.data['x'].astype(str),
                                toolbar_location="below")
 
@@ -311,7 +320,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
 
     plot_distance_att.add_layout(labels_dist_red_att)
 
-    avg_speed_att = figure(name='avg_speed', plot_height=250, plot_width=200,
+    avg_speed_att = figure(name='avg_speed', plot_height=250, plot_width=250,
                            title="Avg Speed of Red Team", tools="reset,save",
                            y_range=source_att_params.data['x'].astype(str),
                            toolbar_location="below")
@@ -365,6 +374,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
         source_def_params.data = dict(x=team_def.player_id.unique(), y=def_dist, speed=avg_speed_def)
         source_att_params.data = dict(x=team_att.player_id.unique(), y=def_dist_att, speed=avg_speed_att)
 
+
     for w in [game_time]:
         w.on_change('value', update_data)
 
@@ -375,7 +385,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
 
         time = game_time.value + slider_steps
         if time > all_team.time.max():
-            time = all_team.time[0]
+            time = all_team.time.min()
         game_time.value = time
 
     callback_id = None
