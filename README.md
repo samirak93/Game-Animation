@@ -1,7 +1,9 @@
 
 Game Animation
 ====
-An easy way to visualize player tracking data with animation. Built using [Bokeh Plots](https://github.com/bokeh/bokeh), this tool be use to visualise player movement in all sport. It also includes Voronoi plot and convex hull, player speed and total distance covered by each player, all of  which can be interactively plotted on/off.
+An easy way to visualize player tracking data with animation. Built using [Bokeh Plots](https://github.com/bokeh/bokeh), this tool can be used to visualise player movement for all sport. It also includes voronoi and convex hull plots, player speed and total distance covered by each player, all of  which can be interactively plotted on/off.
+
+<img src="sample_images/soccer_animation.gif" alt="Soccer Animation" width="700"/>
 
 The code was tested on **`Python 3.7.1`**, but should work for other versions as well. 
 
@@ -19,16 +21,16 @@ The following packages are needed in order to run the code (*Packages with older
 The animation plot can be viewed directly on a `Jupyter Notebook`. 
 
 ### Usage
----
-- The notebook is placed inside the folder `Game_Animation`. A sample basketball and soccer player tracking data is provided on the `sample_data/` directory.  
-- 2 sample notebooks examples (`Soccer_example.ipynb` and `Basketball_example.ipynb`)  are located on the `Game_Animation` folder. 
+--- 
+- 2 sample notebook examples (`Soccer_example.ipynb` and `Basketball_example.ipynb`) are placed on the `Game_Animation` folder. 
 - The background pitch images are placed in `/static/images/` folder.  
 
 
-***Please see `Notes` for additional information.***
+***Please see [Notes](NOTES.md) for additional information.***
  
 
 ### Key parameters to `make_plot`
+
 ---
 
 **`:param doc:`** Plots the graph
@@ -81,13 +83,12 @@ id_att=37
 x_range=(0,94)
 y_range=(0,50)
 
-make_game_plot = partial(make_plot, df=df, id_def = id_def, id_att = id_att,
+make_anim_plot = partial(make_plot, df=df, id_def = id_def, id_att = id_att,
                            headers = ["x", "y", "team_id", "player_id","time"], 
                            image_url=image_url, slider_steps=1,sport='basketball', 
-                           x_range=x_range,y_range=y_range, speed=50)
+                           x_range=x_range,y_range=y_range, anim_speed=50)
 
-show(make_game_plot)
-
+show(make_anim_plot)
 ```
 
 ### Sample soccer animation:
@@ -101,25 +102,24 @@ from functools import partial
 output_notebook()
 
 df = pd.read_csv('sample_data/soccer_sample.csv')
-image_url = ['static/images/soccer.png']
+image_url = 'static/images/soccer.png'
 
 x_range=(-52.5,52.5)
 y_range=(-34, 34)
 
-id_def=1
-id_att = 2
+id_def = 2
+id_att = 1
 
-make_doc_with_df = partial(make_plot, df=df,image_url=image_url, id_def=id_def, id_att = id_att,
+make_anim_plot = partial(make_plot, df=df,image_url=image_url, id_def=id_def, id_att = id_att,
                            x_range=x_range, y_range=y_range, slider_steps=1,
                            headers = ["x", "y", "team_id", "player_id","time"], 
-                           anim_speed=50)
+                           anim_speed=60)
 
-show(make_doc_with_df)
+show(make_anim_plot)
 ```
 
 ### Sample Outputs:
 ---
-<img src="sample_images/soccer_animation.gif" alt="Soccer Animation" width="700"/>
 
 <img src="sample_images/basketball.png" alt="Basketball_example" width="700"/>
 
