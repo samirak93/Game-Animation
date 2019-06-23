@@ -442,3 +442,4 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     doc.title = "Game Animation"
 
     return doc
+
