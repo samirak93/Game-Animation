@@ -28,7 +28,7 @@ The animation plot can be viewed directly on a `Jupyter Notebook`.
 ***Please see `Notes` for additional information.***
  
 
-### Key Parameters to `make_plot`
+### Key parameters to `make_plot`
 ---
 
 **`:param doc:`** Plots the graph
@@ -119,9 +119,11 @@ show(make_doc_with_df)
 
 ### Sample Outputs:
 ---
-<img src="https://raw.githubusercontent.com/samirak93/Game-Animation/master/sample_images/basketball.png" alt="Basketball_example" width="700"/>
+<img src="sample_images/soccer_animation.gif" alt="Soccer Animation" width="700"/>
 
-<img src="https://raw.githubusercontent.com/samirak93/Game-Animation/master/sample_images/soccer.png" alt="Soccer_example" width="700"/>
+<img src="sample_images/basketball.png" alt="Basketball_example" width="700"/>
+
+<img src="sample_images/soccer.png" alt="Soccer_example" width="700"/>
 
 ---
 

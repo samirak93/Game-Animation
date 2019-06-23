@@ -204,7 +204,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
         return plot
 
     plot = figure(name='base',plot_height=550, plot_width=850, title="Game Animation",
-                  tools="reset,save,tap",
+                  tools="reset,save",
                   x_range=x_range, y_range=y_range, toolbar_location="below")
 
     image_min_x, image_min_y, image_max_x, image_max_y = min(x_range), min(y_range), \
