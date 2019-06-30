@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 # importing bokeh and its related functions
-from bokeh.io import curdoc,output_notebook
+from bokeh.io import curdoc
 from bokeh.layouts import row, widgetbox,column
 from bokeh.models import ColumnDataSource, LabelSet, CustomJS, Title
 from bokeh.models.widgets import Slider, Paragraph, Button, CheckboxButtonGroup
@@ -227,7 +227,7 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
         return plot
 
     plot = figure(name='base',plot_height=550, plot_width=850,
-                  title="Game Animation", tools="reset,save",
+                  title="Game Animation", tools="reset,save,wheel_zoom,pan",
                   x_range=x_range, y_range=y_range, toolbar_location="below")
 
     image_min_x, image_min_y, image_max_x, image_max_y = min(x_range), min(y_range), \
@@ -239,9 +239,9 @@ def make_plot(doc, df, headers, id_def, id_att, slider_steps, x_range, y_range,
     plot.scatter('x', 'y', source=source_coord, size=20, fill_color='color')
 
     labels = LabelSet(x='x', y='y', text='player_id',
-                      source=source_coord, y_offset=-30,
+                      source=source_coord, y_offset=-8,
                       render_mode='canvas', text_color='black',
-                      text_font_size="9pt", text_align='center')
+                      text_font_size="8pt", text_align='center')
 
     plot.add_layout(labels)
     plot.axis.visible = False
