@@ -10,7 +10,12 @@ Visualize players being marked by opposition players and find the distance betwe
 
 <img src="sample_images/soccer_animation.gif" alt="Soccer Animation" width="700"/>
 
+---
+#### Player Marking
+
 <img src="sample_images/marking.gif" alt="Player Marking Example" width="700"/>
+
+---
 
 The code was tested on **`Python 3.7.1`**, but should work for other versions as well. 
 
